@@ -1,16 +1,26 @@
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+html,
+body {
+  height: 100%
+}
 
 .transaction {
   padding: 20px;
 }
 
 .transaction-more {
+  text-align: right;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   padding: 20px;
   background-image: linear-gradient(to bottom, transparent 50%, white);
-  text-align: center;
 }
 .transaction-more button {
   padding: 15px 20px;
@@ -18,10 +28,23 @@
   border: none;
   font-size: 16px;
   border-radius: 5px;
+  margin: 0 15px;
 }
 
-.separator {
-  margin: 40px 0;
-  padding: 0 20px;
-  border-top: 2px dashed black
+.loading {
+  position: relative;
+  z-index: 99999999;
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 5px solid grey;
+  border-top-color: black;
+  animation: rotate 1s infinite
 }
