@@ -8,38 +8,38 @@ import "./App.css";
 
 function App() {
   const [offset, setOffset] = useState(0);
-  const [transactions, setTransactions] = useState([])
+  const [transactions, setTransactions] = useState([]);
 
   //initial, get the transactions
   const getTransactions = async function () {
-    const request = await fetch(callAPI(offset))
-    const { data } = await request.json()
-    setTransactions(current => [...current, ...data])
+    const request = await fetch(callAPI(offset));
+    const { data } = await request.json();
+    setTransactions(current => [...data, ...current]);
   }
 
+  // Get transactions
   useEffect(() => {
-    // Get transactions
-    getTransactions()
+    getTransactions();
   }, [offset])
 
-  // Sorting and fetching every one minute
-  useEffect(() => {
-    setInterval(() => {
-      setOffset(offset + 1)
-      setTransactions(current => current.sort((a, b) => b.timestamp - a.timestamp))
-    }, 60000);
+  // // Fetching every one minute
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     setOffset(offset + 30);
+  //     getTransactions();
+  //   }, 3000);
 
-  }, [transactions])
+  // }, [null])
+
 
   return (
-
     Boolean(transactions.length) ? (
       <div className="App">
         {transactions.map((item, key) => (
           <Transaction data={item} key={key} index={key} />
         ))}
         <div className="transaction-more">
-          <button onClick={() => setOffset(offset + 1)}>More transactions</button>
+          <button onClick={() => setOffset(offset + 30)}>More transactions</button>
           <span>Displaying {transactions.length} transactions</span>
         </div>
       </div>
