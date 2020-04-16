@@ -1,51 +1,70 @@
-import React, { useState, useEffect } from "react";
+import React, { Component } from "react";
 import Transaction from './Components/Transaction'
 import Loading from "./Components/Loading";
 import { callAPI } from './utils'
 import "./App.css";
 
-
-
-function App() {
-  const [offset, setOffset] = useState(0);
-  const [transactions, setTransactions] = useState([]);
-
-  //initial, get the transactions
-  const getTransactions = async function () {
-    const request = await fetch(callAPI(offset));
-    const { data } = await request.json();
-    setTransactions(current => [...data, ...current]);
+export default class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      offset: 0,
+      transactions: []
+    }
+    this.getTransactions = this.getTransactions.bind(this)
+    this.setOffset = this.setOffset.bind(this)
   }
 
-  // Get transactions
-  useEffect(() => {
-    getTransactions();
-  }, [offset])
+  setOffset(toTop = false) {
+    const { offset } = this.state;
+    this.setState({
+      offset: offset + 30
+    })
+    this.getTransactions(toTop);
+  }
 
-  // // Fetching every one minute
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     setOffset(offset + 30);
-  //     getTransactions();
-  //   }, 3000);
+  async getTransactions(toTop = false) {
+    const { offset, transactions } = this.state;
+    const request = await fetch(callAPI(offset));
+    const { data } = await request.json();
+    this.setState({
+      transactions: toTop ? [...data, ...transactions] : [...transactions, ...data]
+    });
+  }
 
-  // }, [null])
+  //Initial, Get transactions
+  componentWillMount() {
+    this.getTransactions()
+  }
 
+  //Get new items every 1 minute
+  componentDidMount() {
+    setInterval(() => {
+      this.setOffset(true)
+    }, 60000);
+  }
 
-  return (
-    Boolean(transactions.length) ? (
-      <div className="App">
-        {transactions.map((item, key) => (
-          <Transaction data={item} key={key} index={key} />
-        ))}
-        <div className="transaction-more">
-          <button onClick={() => setOffset(offset + 30)}>More transactions</button>
-          <span>Displaying {transactions.length} transactions</span>
+  render() {
+    const { transactions } = this.state;
+    return (
+      Boolean(transactions.length) ? (
+        <div className="App">
+          {transactions.map((item, key) => (
+            <Transaction data={item} key={key} index={key} />
+          ))}
+          <div className="transaction-more">
+            <button onClick={this.setOffset}>More transactions</button>
+            <span>Displaying {transactions.length} transactions</span>
+          </div>
         </div>
-      </div>
-    ) : <Loading />)
-
+      ) : <Loading />)
+  }
 
 }
 
-export default App;
+
+
+
+
+
+
