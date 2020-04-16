@@ -11,36 +11,34 @@ export default class App extends Component {
       offset: 0,
       transactions: []
     }
-    this.getTransactions = this.getTransactions.bind(this)
-    this.setOffset = this.setOffset.bind(this)
+    this.getTransactions = this.getTransactions.bind(this);
   }
 
-  setOffset(toTop = false) {
-    const { offset } = this.state;
+  async getTransactions() {
+    const { offset, transactions } = this.state;
+
+    //Update/increase the offset
     this.setState({
       offset: offset + 30
     })
-    this.getTransactions(toTop);
-  }
 
-  async getTransactions(toTop = false) {
-    const { offset, transactions } = this.state;
+    //Call the API
     const request = await fetch(callAPI(offset));
     const { data } = await request.json();
+
+    //Update the transactions list
     this.setState({
-      transactions: toTop ? [...data, ...transactions] : [...transactions, ...data]
+      transactions: data.concat(transactions)
     });
   }
 
-  //Initial, Get transactions
-  componentWillMount() {
-    this.getTransactions()
-  }
 
-  //Get new items every 1 minute
   componentDidMount() {
+    //Initial, Get transactions
+    this.getTransactions();
+    //Get new items every 1 minute
     setInterval(() => {
-      this.setOffset(true)
+      this.getTransactions()
     }, 60000);
   }
 
@@ -53,7 +51,7 @@ export default class App extends Component {
             <Transaction data={item} key={key} index={key} />
           ))}
           <div className="transaction-more">
-            <button onClick={this.setOffset}>More transactions</button>
+            <button className="transaction-more-btn" onClick={this.getTransactions}>More transactions</button>
             <span>Displaying {transactions.length} transactions</span>
           </div>
         </div>
