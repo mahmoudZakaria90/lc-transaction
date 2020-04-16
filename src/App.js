@@ -28,7 +28,7 @@ export default class App extends Component {
 
     //Update the transactions list
     this.setState({
-      transactions: data.concat(transactions)
+      transactions: [...data, ...transactions]
     });
   }
 

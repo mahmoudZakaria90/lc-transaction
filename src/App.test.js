@@ -52,13 +52,6 @@ test('Every 1 minute it should automatically pull new items from the API and pus
   const { container } = render(<App />);
   const limit = 30;
   const timeout = 60000;
-  const timer = function (callback) {
-    setTimeout(() => {
-      callback && callback()
-    }, timeout);
-  }
-
-  const callback = jest.fn();
 
   function getTransaction() {
     for (let i = 0; i < limit; i++) {
@@ -68,9 +61,14 @@ test('Every 1 minute it should automatically pull new items from the API and pus
     }
   }
 
-  timer(callback);
+  //load the first 30 records
+  getTransaction();
+
+  //Every 1 minute another pulling to new items
+  setTimeout(() => {
+    getTransaction()
+  }, timeout);
 
 
-  expect(setTimeout).toBeCalled()
-  expect(setTimeout).toHaveBeenCalledTimes(1)
+  expect(setTimeout).toHaveBeenCalled();
 });
